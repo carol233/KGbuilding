@@ -64,6 +64,7 @@ if __name__ == '__main__':
             devel_id = developer_hash_dic[md5]
         else:
             devel_id = get_id()
+            developer_hash_dic[md5] = devel_id
             developer_row = [devel_id, dn, md5, sha1, sha256]
             developer_csv_write.writerow(developer_row)
 
@@ -147,10 +148,16 @@ if __name__ == '__main__':
                 file_id = file_hash_dic[file_md5]
             else:
                 file_id = get_id()
+                file_hash_dic[file_md5] = file_id
                 file_row = [file_id, files[file_md5], file_md5, "safe"]
                 file_csv_write.writerow(file_row)
             apk2file_row = [apk_id, file_id]
             apk2file_csv_write.writerow(apk2file_row)
+
+    fw_id = get_id()
+    f = open("last_id.txt", "w")
+    f.write(fw_id)
+    f.close()
 
 
 
