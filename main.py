@@ -1,16 +1,33 @@
 # coding:utf-8
 import os
 import re
-
+import filetypes
 from csv_writer import *
 import json
 import os
+import csv
+
+apk2family_csv = {}
+
+def load_family():
+    path = "result_data/RmvDroid-Metadata.csv"
+    reader = csv.reader(open(path, "r", encoding='utf-8'))
+    for line in reader:
+        if reader.line_num == 1:
+            continue
+        malfamily = line[-3]
+        file_sha256 = line[-1]
+        apk2family_csv[file_sha256] = malfamily
+        if malfamily not in family_hash_dic:
+            family_id = get_id()
+            family_hash_dic[malfamily] = family_id
+            family_row = [family_id, malfamily]
+            family_csv_write.writerow(family_row)
 
 
 root_path = "result_data"
 file_root_path = os.path.join(root_path, "files_results")
 info_root_path = os.path.join(root_path, "info_results")
-
 
 id = 0
 url_hash_dic = {}
@@ -20,13 +37,29 @@ file_hash_dic = {}
 family_hash_dic = {}
 developer_hash_dic = {}
 
+
 def get_id():
     global id
     id += 1
     return id
 
 
+def get_file_type(file_path):
+    extension = os.path.splitext(file_path)[1].lower().strip('.')
+    if extension in filetypes.PICS:
+        return "picture"
+    elif extension in filetypes.AUDIOS:
+        return "audio"
+    elif extension in filetypes.VIDEOS:
+        return "video"
+    else:
+        return extension
+
 if __name__ == '__main__':
+
+    load_family()
+    print("Family loaded done!")
+
     for apkname in os.listdir(info_root_path):
 
         apk_hash = apkname.strip(".json")
@@ -52,6 +85,12 @@ if __name__ == '__main__':
                     data['apk_version'], data['receiver'], data['service'], data['activity'], data['library']
                     ]
         apk_csv_write.writerow(apk_row)
+
+        """family"""
+        malfamily = apk2family_csv[apk_hash]
+        family_id = family_hash_dic[malfamily]
+        apk2family_row = [apk_id, family_id]
+        apk2file_csv_write.writerow(apk2family_row)
 
         """developer"""
         signatures = data['sign']
@@ -143,20 +182,20 @@ if __name__ == '__main__':
             files[file_md5] = file_name
 
         for file_md5 in files:
-            # file_header = ['id:ID', 'name', 'file_md5', safety]
             if file_md5 in file_hash_dic:
                 file_id = file_hash_dic[file_md5]
             else:
                 file_id = get_id()
                 file_hash_dic[file_md5] = file_id
-                file_row = [file_id, files[file_md5], file_md5, "safe"]
+                path = files[file_md5]
+                file_row = [file_id, path, file_md5, get_file_type(path), "safe"]
                 file_csv_write.writerow(file_row)
             apk2file_row = [apk_id, file_id]
             apk2file_csv_write.writerow(apk2file_row)
 
     fw_id = get_id()
     f = open("last_id.txt", "w")
-    f.write(fw_id)
+    f.write(str(fw_id))
     f.close()
 
 

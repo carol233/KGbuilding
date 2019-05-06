@@ -7,7 +7,7 @@ csv_folder = "csv"
 if not os.path.exists(csv_folder):
     os.mkdir(csv_folder)
 
-file_header = ['id:ID', 'name', 'file_md5', 'safety']
+file_header = ['id:ID', 'name', 'file_md5', 'file_type', 'safety']
 family_header = ['id:ID', 'name']
 developer_header = ['id:ID', 'dn', 'md5', 'sha1', 'sha256']
 apk_header = ['id:ID', 'name', 'sha256', 'safety', 'min_sdk_version', 'target_sdk_version', 'time',
