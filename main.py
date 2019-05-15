@@ -26,7 +26,7 @@ def load_family():
 
 
 root_path = "result_data"
-file_root_path = os.path.join(root_path, "files_results")
+file_root_path = os.path.join(root_path, "files_names")
 info_root_path = os.path.join(root_path, "info_results")
 
 id = 0
@@ -90,7 +90,7 @@ if __name__ == '__main__':
         malfamily = apk2family_csv[apk_hash]
         family_id = family_hash_dic[malfamily]
         apk2family_row = [apk_id, family_id]
-        apk2file_csv_write.writerow(apk2family_row)
+        apk2family_csv_write.writerow(apk2family_row)
 
         """developer"""
         signatures = data['sign']
